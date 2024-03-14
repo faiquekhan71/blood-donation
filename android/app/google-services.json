@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "952929501464",
+    "project_id": "charityappjspm",
+    "storage_bucket": "charityappjspm.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:952929501464:android:1232063acfc2cc3262de6d",
+        "android_client_info": {
+          "package_name": "com.faiquekhan.blood"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBo89PIur1MLWp6xKSd64C3T-BWwGNI8AY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
