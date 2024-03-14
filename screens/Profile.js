@@ -1,5 +1,13 @@
-import { View, Text, Image, TouchableOpacity, Linking } from "react-native";
 import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  Linking,
+  Modal,
+  TextInput,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import PageContainer from "../components/PageContainer";
 import {
@@ -13,10 +21,21 @@ import {
 } from "@expo/vector-icons";
 import { COLORS, FONTS, SIZES, images } from "../constants";
 import * as Location from "expo-location";
+import { Picker } from "@react-native-picker/picker";
 
 const Profile = ({ navigation }) => {
   const [address, setAddress] = useState("Loading...");
   const [errorMsg, setErrorMsg] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    age: "",
+    gender: "",
+    bloodGroup: "",
+    mobileNumber: "",
+    address: "",
+  });
 
   useEffect(() => {
     const getPermissions = async () => {
@@ -43,6 +62,7 @@ const Profile = ({ navigation }) => {
 
     getPermissions();
   }, []);
+
   function handleCallNow() {
     Linking.openURL("tel:+918799906728");
   }
@@ -51,11 +71,16 @@ const Profile = ({ navigation }) => {
     navigation.navigate("Search");
   }
 
+  function handleDonationRequest() {
+    navigation.navigate("DonationRequest");
+  }
+
   function handleInviteFriend() {
     Linking.openURL(
       "whatsapp://send?text=Check out this amazing app I found! It's a platform where you can easily sign up for blood donation drives and contribute to various charity causes. It's a great way to make a difference in someone's life.Let's join hands and spread kindness together! 😊&phone=+918799906728"
     );
   }
+
   function renderHeader() {
     return (
       <View
@@ -161,7 +186,7 @@ const Profile = ({ navigation }) => {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={handleRequest}
+          onPress={handleDonationRequest}
           style={{
             backgroundColor: COLORS.primary,
             width: 150,
@@ -236,7 +261,7 @@ const Profile = ({ navigation }) => {
             alignItems: "center",
             marginVertical: 12,
           }}
-          onPress={() => console.log("Available for Donate pressed")}
+          onPress={handleRequest}
         >
           <MaterialCommunityIcons
             name="calendar-clock-outline"
@@ -266,10 +291,12 @@ const Profile = ({ navigation }) => {
             alignItems: "center",
             marginVertical: 12,
           }}
-          onPress={() => console.log("Get help pressed")}
+          onPress={handleFormModal}
         >
           <Feather name="info" size={24} color={COLORS.primary} />
-          <Text style={{ ...FONTS.body3, marginLeft: 24 }}>Get help</Text>
+          <Text style={{ ...FONTS.body3, marginLeft: 24 }}>
+            Apply for Blood Donation
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={{
@@ -286,6 +313,15 @@ const Profile = ({ navigation }) => {
     );
   }
 
+  function handleFormModal() {
+    setShowModal(true);
+  }
+
+  function saveFormData() {
+    // Your logic to save form data goes here
+    setShowModal(false);
+  }
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <PageContainer>
@@ -296,6 +332,161 @@ const Profile = ({ navigation }) => {
           {renderFeatures()}
           {renderSettings()}
         </View>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={showModal}
+          onRequestClose={() => setShowModal(false)}
+        >
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+            }}
+          >
+            <View
+              style={{
+                backgroundColor: COLORS.white,
+                padding: 20,
+                borderRadius: 10,
+                width: "80%",
+              }}
+            >
+              <Text style={{ ...FONTS.h3, marginBottom: 10 }}>
+                Apply for Blood Donation
+              </Text>
+              <View style={{ marginBottom: 10 }}>
+                <View style={{ flexDirection: "row" }}>
+                  <TextInput
+                    placeholder="First Name"
+                    style={{
+                      flex: 1,
+                      borderBottomWidth: 1,
+                      borderBottomColor: COLORS.gray,
+                      marginRight: 10,
+                    }}
+                    onChangeText={(text) =>
+                      setFormData({ ...formData, firstName: text })
+                    }
+                  />
+                  <TextInput
+                    placeholder="Last Name"
+                    style={{
+                      flex: 1,
+                      borderBottomWidth: 1,
+                      borderBottomColor: COLORS.gray,
+                    }}
+                    onChangeText={(text) =>
+                      setFormData({ ...formData, lastName: text })
+                    }
+                  />
+                </View>
+                <View style={{ flexDirection: "row", marginBottom: 10 }}>
+                  <TextInput
+                    placeholder="Enter Age"
+                    style={{
+                      flex: 1,
+                      borderBottomWidth: 1,
+                      borderBottomColor: COLORS.gray,
+                      marginRight: 10,
+                    }}
+                    onChangeText={(text) =>
+                      setFormData({ ...formData, age: text })
+                    }
+                  />
+                  <Picker
+                    style={{ flex: 1 }}
+                    selectedValue={formData.gender}
+                    onValueChange={(itemValue, itemIndex) =>
+                      setFormData({ ...formData, gender: itemValue })
+                    }
+                  >
+                    <Picker.Item label="Gender" value="" />
+                    <Picker.Item label="Male" value="male" />
+                    <Picker.Item label="Female" value="female" />
+                    <Picker.Item label="Others" value="other" />
+                  </Picker>
+                </View>
+                <Picker
+                  style={{
+                    borderBottomWidth: 1,
+                    borderBottomColor: COLORS.gray,
+                    marginBottom: 10,
+                  }}
+                  selectedValue={formData.bloodGroup}
+                  onValueChange={(itemValue, itemIndex) =>
+                    setFormData({ ...formData, bloodGroup: itemValue })
+                  }
+                >
+                  <Picker.Item label="Select Blood Group" value="" />
+                  <Picker.Item label="A+" value="A+" />
+                  <Picker.Item label="B+" value="B+" />
+                  <Picker.Item label="AB+" value="AB+" />
+                  <Picker.Item label="O+" value="O+" />
+                  <Picker.Item label="A-" value="A-" />
+                  <Picker.Item label="B-" value="B-" />
+                  <Picker.Item label="AB-" value="AB-" />
+                  <Picker.Item label="O-" value="O-" />
+                </Picker>
+                <TextInput
+                  placeholder="Mobile Number"
+                  style={{
+                    borderBottomWidth: 1,
+                    borderBottomColor: COLORS.gray,
+                    marginBottom: 10,
+                  }}
+                  onChangeText={(text) =>
+                    setFormData({ ...formData, mobileNumber: text })
+                  }
+                />
+                <TextInput
+                  placeholder="Address"
+                  multiline={true}
+                  numberOfLines={5}
+                  style={{
+                    borderBottomWidth: 1,
+                    borderBottomColor: COLORS.gray,
+                    marginBottom: 10,
+                  }}
+                  onChangeText={(text) =>
+                    setFormData({ ...formData, address: text })
+                  }
+                />
+              </View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <TouchableOpacity
+                  onPress={() => setShowModal(false)}
+                  style={{
+                    backgroundColor: COLORS.primary,
+                    paddingVertical: 10,
+                    paddingHorizontal: 20,
+                    borderRadius: 5,
+                  }}
+                >
+                  <Text style={{ color: COLORS.white }}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={saveFormData}
+                  style={{
+                    backgroundColor: COLORS.secondary,
+                    paddingVertical: 10,
+                    paddingHorizontal: 20,
+                    borderRadius: 5,
+                  }}
+                >
+                  <Text style={{ color: COLORS.white }}>Save</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </PageContainer>
     </SafeAreaView>
   );
